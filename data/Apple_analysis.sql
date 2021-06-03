@@ -37,26 +37,27 @@ WITH projected_lifespan AS (SELECT *,
 								   		ROUND((est_income::decimal/(initial_cost + Est_cost_after_purchase)::decimal)*100,2) AS percent_return
 								   FROM estimated_income_cost_1)
 								   
-SELECT primary_genre, ROUND(AVG(percent_return), 2) AS avg_percent_return
+/*SELECT primary_genre, ROUND(AVG(percent_return), 2) AS avg_percent_return
 FROM Estimated_income_cost_data
 GROUP BY primary_genre
 ORDER BY avg_percent_return DESC
-LIMIT 10;							   
-								   
+LIMIT 10;	*/						   
+
+/*
 --percentages of ratings for Apple store
 SELECT rating, 
 		COUNT(rating), 
 		ROUND((COUNT(rating)/(SELECT COUNT(*) FROM APP_Store_apps)::numeric)*100,2) AS percent_of_all_ratings
 FROM App_store_apps
 GROUP BY rating
-ORDER BY percent_of_all_ratings DESC;				   
+ORDER BY percent_of_all_ratings DESC;	*/			   
 
 --apps with 4 and 4.5 stars make up a nearly 60% of all apps and therefore would be a great longevity range to pursue
 --Look at returns for apps with either 4 or 4.5 stars
 --Look at rate of return
 
 
-
+/*
 --percentages of genre for Apple
 SELECT primary_genre, 
 		COUNT(primary_genre), 
@@ -64,9 +65,25 @@ SELECT primary_genre,
 FROM App_store_apps
 GROUP BY primary_genre
 ORDER BY percent_of_all_genres DESC
-LIMIT 5;
+LIMIT 5;*/
 
+/*SELECT 
+		CASE WHEN Price::decimal <= 1 Then '$1 or less'
+			WHEN price::decimal > 1 Then price::text
+			END AS Price_category,
+		ROUND(AVG(percent_return), 1) AS avg_percent_return
+FROM Estimated_income_cost_data
+GROUP BY price_category
+ORDER BY avg_percent_return DESC
+LIMIT 10;*/
 
+SELECT 
+		content_rating,
+		ROUND(AVG(percent_return), 1) AS avg_percent_return
+FROM Estimated_income_cost_data
+GROUP BY content_rating
+ORDER BY avg_percent_return DESC
+LIMIT 10;
 
 
 

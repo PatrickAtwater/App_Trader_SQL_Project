@@ -15,7 +15,7 @@ WITH on_both_stores AS(SELECT DISTINCT a.name AS aname,
 					   					a.review_count AS areview, a.primary_genre AS agenre,
 					   		  			p.name AS pname, p.price::money AS pprice, 
 					   					ROUND(ROUND(p.rating * 2, 0)/2,1) AS prating, 
-					   					--p.review_count AS preview, 
+					   					p.content_rating AS pcontent_rating, 
 					   					p.category AS pcategory
 								FROM app_store_apps AS a 
 					   				INNER JOIN play_store_apps AS p
@@ -54,6 +54,8 @@ WITH on_both_stores AS(SELECT DISTINCT a.name AS aname,
 								  		est_income - ((initial_pcost + initial_acost) + Est_cost_after_purchase) AS expected_profit,
 								   		ROUND((est_income::decimal/((initial_pcost + initial_acost) + Est_cost_after_purchase)::decimal)*100,2) AS percent_return
 								   FROM estimated_income_cost_1)
+SELECT COUNT(*)
+FROM Estimated_income_cost_data
 /* avg_percent_return by genre
 SELECT agenre, ROUND(AVG(percent_return), 2) AS avg_percent_return
 FROM Estimated_income_cost_data
@@ -87,21 +89,58 @@ ORDER BY percent_of_all_ratings DESC;*/
 
 
 
-
+/*
 --Look at rate of return
 --percentages of category for PLAY
-SELECT agenre,
-		COUNT(agenre),
-		ROUND((COUNT(agenre)/(SELECT COUNT(*) FROM Estimated_income_cost_data)::numeric)*100,2) AS percent_of_all_genres
+SELECT pcategory,
+		COUNT(pcategory),
+		ROUND((COUNT(pcategory)/(SELECT COUNT(*) FROM Estimated_income_cost_data)::numeric)*100,2) AS percent_of_all_genres
 FROM Estimated_income_cost_data
-GROUP BY agenre
+GROUP BY pcategory
 ORDER BY percent_of_all_genres DESC
 LIMIT 10;
+*/
+/*
+-- Top 10 Apps Data
+SELECT aname,
+		pcontent_rating,
+		avg_rounded_rating,
+		projected_lifespan_months/12 AS projected_lifespan_years, 
+		expected_profit,
+		percent_return
+FROM Estimated_income_cost_data
+WHERE aname ILIKE '%Southwest%'
+OR aname ILIKE '%AirBNB%'
+OR aname ILIKE 'Instagram%'
+OR aname ILIKE '%Facebook%'
+OR aname ILIKE '%Uber'
+OR aname ILIKE '%Domino_s%'
+OR aname ILIKE '%Starbucks%'
+OR aname ILIKE '%Doordash%'
+OR aname ILIKE '%Youtube%'
+OR aname ILIKE '%Design Home%'
+OR aname ILIKE '%Fandango%' 
+ORDER BY percent_return DESC;
+*/
 
+/*SELECT 
+		CASE WHEN aPrice::decimal <= 1 Then '$1 or less'
+			WHEN aprice::decimal > 1 Then aprice::text
+			 WHEN pPrice::money::decimal <= 1 Then '$1 or less'
+			WHEN pprice::money::decimal > 1 Then pprice::text
+			END AS Price_category,
+		ROUND(AVG(percent_return), 1) AS avg_percent_return
+FROM Estimated_income_cost_data
+GROUP BY price_category
+ORDER BY avg_percent_return DESC
+LIMIT 10;*/
 
-
-
-
-
+SELECT 
+		pcontent_rating,
+		ROUND(AVG(percent_return), 1) AS avg_percent_return
+FROM Estimated_income_cost_data
+GROUP BY pcontent_rating
+ORDER BY avg_percent_return DESC
+LIMIT 10;
 
 

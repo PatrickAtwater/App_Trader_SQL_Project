@@ -11,8 +11,8 @@ PLAY
 
 
 
-SELECT*FROM play_store_apps
-Limit 5
+/*SELECT*FROM play_store_apps
+Limit 5*/
 --PLAY STORE CTE AND DATA
 WITH rating_conversion AS (SELECT *, 
 						   ROUND(ROUND(rating * 2, 0)/2,1) AS rounded_rating
@@ -43,35 +43,37 @@ WITH rating_conversion AS (SELECT *,
 								  		est_income - (initial_cost + Est_cost_after_purchase) AS expected_profit,
 								   		ROUND((est_income::decimal/(initial_cost + Est_cost_after_purchase)::decimal)*100,2) AS percent_return
 								   FROM estimated_income_cost_1)
-								   
-SELECT Category, ROUND(AVG(percent_return), 2) AS avg_percent_return
+--avg_percent_return by category								   
+/*SELECT Category, ROUND(AVG(percent_return), 2) AS avg_percent_return
 FROM Estimated_income_cost_data
 GROUP BY category
 ORDER BY avg_percent_return DESC
-LIMIT 10;
-				  							  
-SELECT name, price, review_count::decimal, rounded_rating, projected_lifespan_months, percent_return, expected_profit, genres
+LIMIT 10;*/
+
+
+--extra
+/*SELECT name, price, review_count::decimal, rounded_rating, projected_lifespan_months, percent_return, expected_profit, genres
 FROM Estimated_income_cost_data
 	--AND prating = 4.5 
 	--OR prating = 4.0
 ORDER BY percent_return DESC, Review_count DESC;
+*/
 
-
-
+/*
 --percentages of ratings for Play store
 SELECT ROUND(ROUND(rating * 2, 0)/2,1) AS rounded_rating,
 		COUNT(rating),
 		ROUND(ROUND((COUNT(rating)/(SELECT COUNT(*) FROM play_store_apps)::numeric)*100,2)/2,1) AS percent_of_all_ratings
 FROM play_store_apps
 GROUP BY rounded_rating
-ORDER BY percent_of_all_ratings DESC;
+ORDER BY percent_of_all_ratings DESC;*/
 
 --apps with 4 and 4.5 stars make up a nearly 60% of all apps and therefore would be a great longevity range to pursue
 --Look at returns for apps with either 4 or 4.5 stars
 
 
 
-
+/*
 --Look at rate of return
 --percentages of category for PLAY
 SELECT category,
@@ -80,26 +82,44 @@ SELECT category,
 FROM play_store_apps
 GROUP BY category
 ORDER BY percent_of_all_genres DESC
+LIMIT 10;*/
+
+
+/*SELECT 
+		CASE WHEN Price::money::decimal <= 1 Then '$1 or less'
+			WHEN price::money::decimal <= 2 Then 'btw $1 and $2'
+			ELSE 'greater than $2'
+			END AS Price_category,
+		ROUND(AVG(percent_return), 1) AS avg_percent_return
+FROM Estimated_income_cost_data
+GROUP BY price_category
+ORDER BY avg_percent_return DESC
 LIMIT 10;
+*/
+/*
+--count of price category 
+price_category_count AS(SELECT 
+		CASE WHEN Price::money::decimal <= 1 Then '$1 or less'
+			WHEN price::money::decimal <= 2 Then 'btw $1 and $2'
+			ELSE 'greater than $2'
+			END AS Price_category
+			FROM Estimated_income_cost_data)
+SELECT price_category, COUNT(price_category)
+FROM price_category_count
+GROUP by price_category*/
+		
+/*		ROUND(AVG(percent_return), 1) AS avg_percent_return
+FROM Estimated_income_cost_data
+GROUP BY price_category
+ORDER BY avg_percent_return DESC
+LIMIT 10;
+*/
 
 
-
-
-WITH on_both_stores AS(SELECT DISTINCT a.name AS aname, 
-					   					a.price::money AS aprice,
-					   					ROUND(ROUND(a.rating * 2, 0)/2,1) AS arating, 
-					   					a.review_count AS areview, a.primary_genre AS agenre,
-					   		  			p.name AS pname, p.price::money AS pprice, 
-					   					ROUND(ROUND(p.rating * 2, 0)/2,1) AS prating, 
-					   					--p.review_count AS preview, 
-					   					p.genres AS pgenre
-								FROM app_store_apps AS a 
-					   				INNER JOIN play_store_apps AS p
-		 								ON a.name=p.name)
-SELECT DISTINCT * FROM on_both_stores;
-
---LOOK INTO ANY REASON TO PURSUE NON FREE APPS
---Ask Eric about removing duplicates
-
-
-
+SELECT 
+		content_rating,
+		ROUND(AVG(percent_return), 1) AS avg_percent_return
+FROM Estimated_income_cost_data
+GROUP BY content_rating
+ORDER BY avg_percent_return DESC
+LIMIT 10;
